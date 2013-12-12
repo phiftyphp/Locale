@@ -7,9 +7,12 @@
         "corneltek\/phpunit-testmore": "dev-master"
     },
     "autoload": {
-        "psr-0": { "Phifty\\Locale": "." },
-        "files": ["helpers.php"]
+        "psr-0": {
+            "Phifty\\Locale": "."
+        },
+        "files": [
+            "helpers.php"
+        ]
     },
-    "version": "1.0.0"
+    "version": "1.0.1"
 }
-
