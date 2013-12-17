@@ -169,8 +169,8 @@ class Locale
         $lang = $this->current;
         // putenv("LANG=$lang");
         // putenv("LANGUAGE=$lang");
-        setlocale(LC_MESSAGES, $lang );
-	header('Content-Language: '. strtolower(str_replace('_', '-', $lang)) );
+        // setlocale(LC_ALL, $lang );
+		header('Content-Language: '. strtolower(str_replace('_', '-', $lang)) );
         // setlocale(LC_ALL,  $lang);
         // setlocale(LC_TIME, $lang);
         setlocale(LC_ALL,  "$lang.UTF-8" );
