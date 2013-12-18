@@ -167,12 +167,8 @@ class Locale
     public function setupEnv()
     {
         $lang = $this->current;
-        // putenv("LANG=$lang");
-        // putenv("LANGUAGE=$lang");
-        // setlocale(LC_ALL, $lang );
-		header('Content-Language: '. strtolower(str_replace('_', '-', $lang)) );
-        // setlocale(LC_ALL,  $lang);
-        // setlocale(LC_TIME, $lang);
+        putenv("LC_ALL=$lang");
+        header('Content-Language: '. strtolower(str_replace('_', '-', $lang)) );
         setlocale(LC_ALL,  "$lang.UTF-8" );
         setlocale(LC_TIME, "$lang.UTF-8");
     }
