@@ -126,10 +126,10 @@ class Locale
 
     public function add( $lang , $name = null )
     {
-        if ( ! $name )
+        if ( ! $name ) {
             $name = _( $lang );
+        }
         $this->langList[ $lang ] = $name;
-
         return $this;
     }
 
@@ -150,18 +150,45 @@ class Locale
         return @$this->langList[ $lang ];
     }
 
+    public function setDomain($domain)
+    {
+        $this->domain = $domain;
+    }
+
     public function domain( $domain )
     {
         $this->domain = $domain;
-
         return $this;
+    }
+
+    public function setLocaleDir($dir)
+    {
+        $this->localedir = $dir;
     }
 
     public function localedir( $dir )
     {
         $this->localedir = $dir;
-
         return $this;
+    }
+
+    public function getMessageDir($lang) {
+        return $this->localedir
+            . DIRECTORY_SEPARATOR
+            . $lang
+            . DIRECTORY_SEPARATOR
+            . 'LC_MESSAGES'
+            ;
+    }
+
+    /**
+     * Return the LC_MESSAGES path of a language
+     *
+     * @return string
+     */
+    public function getLocalePoFile( $lang )
+    {
+        return $this->getMessageDir($lang) . DIRECTORY_SEPARATOR . $this->domain . '.po';
     }
 
     public function setupEnv()
