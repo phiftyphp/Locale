@@ -1,0 +1,20 @@
+language: php
+php:
+- 5.4
+- 5.5
+- 5.6
+install:
+- travis_retry composer self-update
+- travis_retry composer install
+before_script:
+script:
+- phpenv rehash
+- phpunit
+after_success:
+cache:
+  apt: true
+  directories:
+  - vendor
+notifications:
+  slack:
+    secure: OwI7PtL9OGmGvwJ8SRObkTvl0cMQqRssLJ+fWwrAUQ4HW/CxAg95q0jPZ4YHmUk6eFTp23HtYrV62icVUiw0dmbGOnsKBPKW5fMs8+rXTXcKi4lu5sP8lsak8ORBLcp75pagiMrviMS6nvAJO/l0U7XMGGGHJjbfyLa5bRkXdRo=
