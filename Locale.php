@@ -1,7 +1,7 @@
 <?php
 namespace Phifty;
 /**
-  @VERSION 1.0.4
+  @VERSION 1.1.0
 
 _('en')
 _('ja')
