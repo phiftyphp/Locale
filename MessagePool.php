@@ -17,11 +17,13 @@ class MessagePool implements ArrayAccess, IteratorAggregate
     /**
      * The constructor will detect if gettext extension is loaded.
      */
-    public function __construct($locale, $messageDirectory = null)
+    public function __construct($locale = null, $messageDirectory = null)
     {
         $this->gettextEnabled = extension_loaded('gettext');
         $this->messageDirectory = $messageDirectory ?: __DIR__;
-        $this->loadByLocale($locale);
+        if ($locale) {
+            $this->loadByLocale($locale);
+        }
     }
 
     /**
