@@ -10,14 +10,15 @@ use Exception;
  */
 class MessagePool implements ArrayAccess, IteratorAggregate
 {
-    protected $messages = [];
+    protected $messages = [ ];
 
     /**
      * The constructor will detect if gettext extension is loaded.
      */
-    public function __construct()
+    public function __construct($locale)
     {
         $this->gettextEnabled = extension_loaded('gettext');
+        $this->loadByLocale($locale);
     }
 
     /**
@@ -35,7 +36,7 @@ class MessagePool implements ArrayAccess, IteratorAggregate
     public function loadMessagesFromFile($localeFile)
     {
         if (!file_exists($localeFile)) {
-            return false;
+            throw new Exception("Can't load translation entries from '$localeFile'");
         }
         if ($messages = require $localeFile) {
             $this->messages = $messages;
@@ -95,13 +96,13 @@ class MessagePool implements ArrayAccess, IteratorAggregate
         return $msgId;
     }
 
-    static public function getInstance()
+    static public function getInstance($locale = 'en')
     {
         static $instance;
         if ($instance) {
             return $instance;
         }
-        return $instance = new self;
+        return $instance = new self($locale);
     }
     
     public function offsetSet($name,$value)
@@ -130,18 +131,4 @@ class MessagePool implements ArrayAccess, IteratorAggregate
     }
     
 }
-
-/**
- * This is used for gettext message parser
- * @codeCoverageIgnore
-
-_('file.required');
-_('param.required');
-_('validation.error');
-_('Validation Error');
-_('Field %1 is required.');
-_('File Field %1 is required.');
-
- */
-
 
