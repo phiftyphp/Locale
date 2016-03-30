@@ -17,6 +17,8 @@ class Locale
 {
     const LOCALE_KEY = 'locale';
 
+    const QUERY_KEY = 'locale';
+
     const COOKIE_LIFETIME = 2592000;
 
     public $domain;
@@ -52,22 +54,17 @@ class Locale
         return $this;
     }
 
-
-
     public function init($overrideLanguage = null)
     {
-        $lang = null;
-        if ($overrideLanguage)
+        $lang = $this->defaultLang;
+        if (isset($_GET[self::QUERY_KEY])) {
+            $lang = $_GET[self::QUERY_KEY];
+        }
+        if (isset($_COOKIE[self::LOCALE_KEY])) {
+            $lang = $_COOKIE[self::LOCALE_KEY];
+        }
+        if ($overrideLanguage) {
             $lang = $overrideLanguage;
-
-        if (! $lang && isset($_GET[self::LOCALE_KEY]))
-            $lang = $_GET[self::LOCALE_KEY];
-        if (! $lang && isset($_COOKIE[self::LOCALE_KEY]))
-            $lang = @$_COOKIE[self::LOCALE_KEY];
-        if (! $lang)
-            $lang = $this->defaultLang;
-        if (! $lang) {
-            throw new Exception( 'Locale: Language is not define.' );
         }
         $this->speak($lang);
         return $this;
