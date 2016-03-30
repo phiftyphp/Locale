@@ -62,10 +62,6 @@ class Locale
 
         if (! $lang && isset($_GET[self::LOCALE_KEY]))
             $lang = $_GET[self::LOCALE_KEY];
-        if (! $lang && isset($_POST[self::LOCALE_KEY]))
-            $lang = $_POST[self::LOCALE_KEY];
-        if (! $lang && isset( $_SESSION[self::LOCALE_KEY]))
-            $lang = @$_SESSION[self::LOCALE_KEY];
         if (! $lang && isset($_COOKIE[self::LOCALE_KEY]))
             $lang = @$_COOKIE[self::LOCALE_KEY];
         if (! $lang)
