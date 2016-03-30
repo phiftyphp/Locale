@@ -12,64 +12,82 @@ _('fr')
 */
 
 use Exception;
-define( 'L10N_LOCALE_KEY' , 'locale' );
 
 class Locale
 {
-    public $current;
-    public $langList = array();
-    public $localedir;
+    const LOCALE_KEY = 'locale';
+
+    const COOKIE_LIFETIME = 2592000;
+
     public $domain;
+
+    public $localedir;
+
+    public $codeset = 'UTF-8';
+
+    public $current;
+
+    public $langList = array();
+
+
     public $defaultLang;
 
-    public function setDefault( $lang )
+    public function __construct($domain, $localeDir, array $languages = array())
+    {
+        $this->domain = $domain;
+        $this->localedir = $localeDir;
+        foreach ($languages as $idx => $localeName) {
+            if (is_numeric($idx)) {
+                $this->addLanguage($localeName);
+            } else {
+                $this->addLanguage($idx, $localeName);
+            }
+        }
+    }
+    
+
+    public function setDefaultLanguage($lang)
     {
         $this->defaultLang = $lang;
-
         return $this;
     }
 
-    public function getDefault()
-    {
-        return $this->defaultLang;
-    }
 
-    public function init( $force_lang = null  )
+
+    public function init($overrideLanguage = null)
     {
         $lang = null;
+        if ($overrideLanguage)
+            $lang = $overrideLanguage;
 
-        if ( $force_lang )
-            $lang = $force_lang;
-
-        if ( ! $lang && isset($_GET[ L10N_LOCALE_KEY ]) )
-            $lang = $_GET[ L10N_LOCALE_KEY ];
-        if ( ! $lang && isset($_POST[ L10N_LOCALE_KEY ]) )
-            $lang = $_POST[ L10N_LOCALE_KEY ];
-        if ( ! $lang && isset( $_SESSION[ L10N_LOCALE_KEY ] ) )
-            $lang = @$_SESSION[ L10N_LOCALE_KEY ];
-
-        if ( ! $lang && isset( $_COOKIE['locale'] ) )
-            $lang = @$_COOKIE['locale'];
-
-        if ( ! $lang )
+        if (! $lang && isset($_GET[self::LOCALE_KEY]))
+            $lang = $_GET[self::LOCALE_KEY];
+        if (! $lang && isset($_POST[self::LOCALE_KEY]))
+            $lang = $_POST[self::LOCALE_KEY];
+        if (! $lang && isset( $_SESSION[self::LOCALE_KEY]))
+            $lang = @$_SESSION[self::LOCALE_KEY];
+        if (! $lang && isset($_COOKIE[self::LOCALE_KEY]))
+            $lang = @$_COOKIE[self::LOCALE_KEY];
+        if (! $lang)
             $lang = $this->defaultLang;
-        if ( ! $lang )
+        if (! $lang) {
             throw new Exception( 'Locale: Language is not define.' );
-        $this->speak( $lang );
+        }
+        $this->speak($lang);
         return $this;
     }
 
     public function saveSession()
     {
         if ( isset($_SESSION) ) {
-            $_SESSION[ L10N_LOCALE_KEY ] = $this->current;
+            $_SESSION[self::LOCALE_KEY] = $this->current;
         }
     }
 
-    public function saveCookie()
+    protected function setCookie()
     {
-        $time = time() + 60 * 60 * 24 * 30;
-        @setcookie( L10N_LOCALE_KEY , $this->current , $time , '/' );
+        $time = time() + self::COOKIE_LIFETIME;
+        @setcookie(self::LOCALE_KEY , $this->current , $time , '/');
     }
 
     public function getCurrentLang()
@@ -77,14 +95,12 @@ class Locale
         return $this->current;
     }
 
-    // set current language
-    public function speak( $lang )
+    public function speak($lang)
     {
         $this->current = $lang;
-        $this->saveCookie();
+        $this->setCookie();
         $this->saveSession();
         $this->initGettext();
-
         return $this;
     }
 
@@ -105,31 +121,36 @@ class Locale
 
     public function available()
     {
-        return $this->getLangList();
+        return $this->getLanguages();
     }
 
-    // get available language list
-    public function getLangList()
+    /**
+     * Get available language list
+     *
+     * @return array
+     */
+    public function getLanguages()
     {
-        // update language Label
-        foreach ($this->langList as $n => $v) {
-            $this->langList[ $n ] = _( $n );
-        }
-
         return $this->langList;
     }
 
-    public function setLangList( $list )
+    public function setLanguages(array $list)
     {
         $this->langList = $list;
     }
 
-    public function add( $lang , $name = null )
+    /**
+     * Add available language to the list
+     *
+     * @param string $lang
+     * @param string $name
+     */
+    protected function addLanguage($lang, $name = null)
     {
-        if ( ! $name ) {
-            $name = _( $lang );
+        if (! $name) {
+            $name = _($lang);
         }
-        $this->langList[ $lang ] = $name;
+        $this->langList[$lang] = $name;
         return $this;
     }
 
@@ -147,7 +168,7 @@ class Locale
     // get language name from language hash
     public function name( $lang )
     {
-        return @$this->langList[ $lang ];
+        return @$this->langList[$lang];
     }
 
     public function setDomain($domain)
@@ -155,21 +176,9 @@ class Locale
         $this->domain = $domain;
     }
 
-    public function domain( $domain )
-    {
-        $this->domain = $domain;
-        return $this;
-    }
-
     public function setLocaleDir($dir)
     {
         $this->localedir = $dir;
-    }
-
-    public function localedir( $dir )
-    {
-        $this->localedir = $dir;
-        return $this;
     }
 
     public function getMessageDir($lang) {
@@ -186,7 +195,7 @@ class Locale
      *
      * @return string
      */
-    public function getLocalePoFile( $lang )
+    public function getLocalePoFile($lang)
     {
         return $this->getMessageDir($lang) . DIRECTORY_SEPARATOR . $this->domain . '.po';
     }
@@ -202,19 +211,27 @@ class Locale
 
     protected function initGettext()
     {
-        $textdomain = $this->domain;
-        if (! $textdomain) {
-            throw new Exception( 'Locale: textdomain is not defined.' );
-        }
-        $localedir = $this->localedir;
-        if (!$localedir) {
-            throw new Exception( 'Locale: locale dir is not defined.' );
-        }
         $this->setupEnv();
-        bindtextdomain( $textdomain, $localedir );
-        bind_textdomain_codeset( $textdomain, 'UTF-8');
-        textdomain( $textdomain );
+        bindtextdomain($this->domain, $this->localedir);
+        bind_textdomain_codeset($this->domain, $this->codeset);
+        textdomain($this->domain);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function setDefault($lang)
+    {
+        $this->defaultLang = $lang;
         return $this;
+    }
+
+    /**
+     * @deprecated
+     */
+    public function getDefault()
+    {
+        return $this->defaultLang;
     }
 }
 
