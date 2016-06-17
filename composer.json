@@ -1,14 +1,11 @@
 {
-    "name": "corneltek/locale",
+    "name": "phifty/locale",
     "require": {
         "php": ">=5.3.0"
-    },
-    "require-dev": {
-        "corneltek/phpunit-testmore": "dev-master"
     },
     "autoload": {
         "psr-4": { "Phifty\\": "" },
         "files": [ "helpers.php" ]
     },
-    "extra": { "branch-alias": { "dev-master": "2.0.x-dev" } }
+    "extra": { "branch-alias": { "dev-master": "3.1.x-dev" } }
 }
