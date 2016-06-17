@@ -10,7 +10,8 @@
          verbose="true">
   <testsuites>
     <testsuite name="LocaleTest">
-      <directory suffix="Test.php">tests</directory>
+      <file>LocaleTest.php</file>
+      <file>MessagePool.php</file>
     </testsuite>
   </testsuites>
 </phpunit>
